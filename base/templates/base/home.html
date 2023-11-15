@@ -1,0 +1,15 @@
+{% extends 'main.html' %}
+{% block content %}
+    <body>
+    <main class="layout layout--3">
+        <div class="container">
+            {% include 'base/topic_component.html' %}
+
+            {% include 'base/feed_component.html' %}
+
+            {% include 'base/activity_component.html' %}
+        </div>
+    </main>
+        <script src="/static/js/script.js"></script>
+    </body>
+{% endblock %}
