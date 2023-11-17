@@ -7,14 +7,14 @@
         {% for topic in topics|slice:":1" %}
             <li>
                 <a href="{% url 'home' %}" class="active">
-                    All <span>{{ topic.room_count }}</span>
+                    All <span>{{ topics.count }}</span>
                 </a>
             </li>
         {% endfor %}
         {% for topic in topics %}
             <li>
                 <a href="{% url 'home' %}?q={{ topic.name }}">
-                    {{ topic.name }} <span>{{ topic.room_count }}</span>
+                    {{ topic.name }} <span>{{ topic_counts|default:0 }}</span>
                 </a>
             </li>
         {% endfor %}

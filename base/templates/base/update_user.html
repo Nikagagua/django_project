@@ -20,18 +20,24 @@
                 <div class="layout__body">
                     <form class="form" action="" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
+                        {{ form.errors }}
 
                         {% for field in form %}
                             <div class="form__group">
-                                <label for="profile_pic">{{field.label}}</label>
-                                {{field}}
+                                <label for="profile_pic">{{ field.label }}</label>
+                                {{ field }}
                             </div>
                         {% endfor %}
 
 
                         <div class="form__action">
                             <a class="btn btn--dark" href="{% url 'home' %}">Cancel</a>
-                            <button class="btn btn--main" type="submit">Update</button>
+                            <a href="{% url 'user-profile' request.user.id %}"
+                                    class="btn btn--main" 
+                                    type="submit"
+                            >
+                                Update
+                            </a>
                         </div>
                     </form>
                 </div>

@@ -13,8 +13,8 @@
             </label>
         </form>
         <div class="mobile-menuItems">
-            <a class="btn btn--main btn--pill" href="{% url 'home' %}">Browse Topics</a>
-            <a class="btn btn--main btn--pill" href="{% url 'home' %}">Recent Activities</a>
+            <a class="btn btn--main btn--pill" href="{% url 'topics' %}">Browse Topics</a>
+            <a class="btn btn--main btn--pill" href="{% url 'activity' %}">Recent Activities</a>
         </div>
     </div>
     <div class="roomList__header">
@@ -111,7 +111,7 @@
                         {{ room.participants.count|divisibleby:"1000" }}k Joined
                     {% endif %}
                 </a>
-                <p class="roomListRoom__topic">{{ room.topic.name }}</p>
+                <p class="roomListRoom__topic">{{ room_info.topic.name }}</p>
             </div>
         </div>
     {% endfor %}

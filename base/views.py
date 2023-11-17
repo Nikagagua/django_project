@@ -4,43 +4,48 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
 from .models import Room, Topic, Message, User
-from .forms import RoomForm, MessageForm, MyUserCreationForm, UserForm
-from django.db.models import Count
+from .forms import RoomForm, MessageForm, MyUserCreationForm, UserForm, TopicForm
+
+HOME_PAGE = 'home'
+LOGIN_PAGE = 'login'
 
 
 def login_page(request):
-    page = 'login'
+    page = LOGIN_PAGE
+    form = MyUserCreationForm()
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect(HOME_PAGE)
 
     if request.method == 'POST':
-        username = request.POST.get('username').lower()
+        email = request.POST.get('email').lower()
         password = request.POST.get('password')
 
         user_exists = None
         try:
-            user_exists = User.objects.get(username=username)
+            user_exists = User.objects.get(email=email)
         except User.DoesNotExist as e:
             messages.error(request, f'User {user_exists} does not exist', e)
-            return redirect('login')
+            return redirect(LOGIN_PAGE)
 
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, username=email, password=password)
 
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect(HOME_PAGE)
         else:
             messages.error(request, 'Incorrect username or password. Please try again.')
 
-    context = {'page': page}
+    context = {
+        'form': form,
+        'page': page
+    }
     return render(request, 'base/login.html', context)
 
 
 def logout_page(request):
     logout(request)
-    return redirect('home')
+    return redirect(HOME_PAGE)
 
 
 def register_page(request):
@@ -54,8 +59,9 @@ def register_page(request):
             user.username = user.username.lower()
             user.save()
             login(request, user)
-            return redirect('home')
+            return redirect(HOME_PAGE)
         else:
+            print(form.errors)
             messages.error(request, 'An error occurred during registration. Please check the form data.')
 
     return render(request, 'base/signup.html', context)
@@ -100,7 +106,7 @@ def room(request, pk):
             room_info.participants.add(request.user)
             return redirect('room', pk=room_info.id)
         else:
-            return redirect('login')
+            return redirect(LOGIN_PAGE)
 
     context = {
         'room': room_info,
@@ -110,13 +116,15 @@ def room(request, pk):
     return render(request, 'base/room.html', context)
 
 
-@login_required(login_url='login')
+@login_required(login_url=LOGIN_PAGE)
 def user_profile(request, pk):
+    form = UserForm(request.GET, request.FILES, instance=request.user)
     user = User.objects.get(id=pk)
     rooms = user.room_set.all()
     message_info = user.message_set.all()
     topics = Topic.objects.all()
     context = {
+        'form': form,
         'user': user,
         'rooms': rooms,
         'message_info': message_info,
@@ -125,7 +133,7 @@ def user_profile(request, pk):
     return render(request, 'base/profile.html', context)
 
 
-@login_required(login_url='login')
+@login_required(login_url=LOGIN_PAGE)
 def create_room(request):
     form = RoomForm()
     topics = Topic.objects.all()
@@ -141,7 +149,7 @@ def create_room(request):
             description=request.POST.get('description'),
         )
 
-        return redirect('home')
+        return redirect(HOME_PAGE)
     context = {
         'form': form,
         'topics': topics
@@ -149,7 +157,7 @@ def create_room(request):
     return render(request, 'base/room_form.html', context)
 
 
-@login_required(login_url='login')
+@login_required(login_url=LOGIN_PAGE)
 def handle_room(request, pk, action):
     room_obj = get_object_or_404(Room, id=pk)
 
@@ -160,7 +168,7 @@ def handle_room(request, pk, action):
         form = RoomForm(request.POST or None, instance=room_obj)
         if request.method == 'POST' and form.is_valid():
             form.save()
-            return redirect('home')
+            return redirect(HOME_PAGE)
         context = {'form': form, 'room': room_obj}
         return render(request, 'base/edit-room.html', context)
 
@@ -170,12 +178,12 @@ def handle_room(request, pk, action):
             return render(request, 'base/delete.html', context)
         if request.method == 'POST':
             room_obj.delete()
-            return redirect('home')
+            return redirect(HOME_PAGE)
 
     return HttpResponse('Invalid action', status=400)
 
 
-@login_required(login_url='login')
+@login_required(login_url=LOGIN_PAGE)
 def update_message(request, pk):
     message_obj = Message.objects.get(id=pk)
     form = MessageForm(instance=message_obj)
@@ -193,7 +201,7 @@ def update_message(request, pk):
     return render(request, 'base/edit-room.html', context)
 
 
-@login_required(login_url='login')
+@login_required(login_url=LOGIN_PAGE)
 def delete_message(request, pk):
     message_obj = Message.objects.get(id=pk)
 
@@ -207,7 +215,7 @@ def delete_message(request, pk):
     return render(request, 'base/delete.html', {'message_obj': message_obj})
 
 
-@login_required(login_url='login')
+@login_required(login_url=LOGIN_PAGE)
 def delete_activity(request, pk):
     activity_obj = Message.objects.get(id=pk)
 
@@ -216,15 +224,40 @@ def delete_activity(request, pk):
 
     if request.method == 'POST':
         activity_obj.delete()
-        return redirect('home')
+        return redirect(HOME_PAGE)
 
     return render(request, 'base/delete.html', {'obj': activity_obj})
+
+
+@login_required(login_url='login')
+def update_user(request):
+    user = request.user
+    form = UserForm(instance=user)
+
+    if request.method == 'POST':
+        form = UserForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user-profile', pk=user.id)
+
+    context = {
+        'user': user,
+        'form': form
+    }
+    print(form.errors)
+
+    return render(request, 'base/update_user.html', context)
 
 
 def topics_page(request):
     q = request.GET.get('q') if request.GET.get('q') is not None else ''
     topics = Topic.objects.filter(name__icontains=q)
-    context = {'topics': topics}
+
+    topic_counts = {topics: topic.rooms.count() for topic in topics}
+    context = {
+        'topics': topics,
+        'topic_counts': topic_counts
+    }
     return render(request, 'base/topic_component.html', context)
 
 

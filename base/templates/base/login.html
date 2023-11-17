@@ -17,18 +17,13 @@
                         {% if page == 'login' %}
                             {% csrf_token %}
                             <div class="form__group form__group">
-                                <label for="room_name">Username
-                                    <input id="username" name="username" type="text" placeholder="Enter Username"/>
+                                <label for="{{ form.email.id_for_label }}">Email
+                                    {{ form.email }}
                                 </label>
                             </div>
                             <div class="form__group">
-                                <label for="password">Password</label>
-                                <input
-                                        id="password"
-                                        name="password"
-                                        type="password"
-                                        placeholder="Enter Password"
-                                />
+                                <label for="{{ form.password1.id_for_label }}">Password</label>
+                                {{ form.password1 }}
                             </div>
 
                             <button class="btn btn--main" type="submit">
