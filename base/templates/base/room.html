@@ -19,7 +19,7 @@
                     </div>
                     {% if room.host == request.user %}
                         <div class="room__topRight">
-                            <a href="{% url 'update-room' room.id 'update' %}">
+                            <a href="{% url 'update-room' room.id %}">
                                 <svg height="32" viewBox="0 0 24 24" width="32"
                                      xmlns="http://www.w3.org/2000/svg">
                                     <title>edit</title>
@@ -38,7 +38,7 @@
                                     </g>
                                 </svg>
                             </a>
-                            <a href="{% url 'update-room' room.id 'delete' %}">
+                            <a href="{% url 'update-room' room.id %}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
                                      viewBox="0 0 32 32">
                                     <title>remove</title>
@@ -66,7 +66,7 @@
                                 <span>@{{ room.host.username }}</span>
                             </a>
                         </div>
-                        <span class="room__topics">{{ room.topic }}</span>
+                        <span class="room__topics">{{ room.topic.name }}</span>
                     </div>
 
                     <div class="room__conversation">
@@ -119,16 +119,14 @@
                     </form>
                 </div>
             </div>
-            <!-- Room End -->
 
-            <!--   Start -->
             <div class="participants">
                 <h3 class="participants__top">Participants <span>({{ participants.count }} Joined)</span></h3>
                 <div class="participants__list scroll">
                     {% for user in participants %}
                         <a href="{% url 'user-profile' user.id %}" class="participant">
                             <div class="avatar avatar--medium">
-                                <img src="{{ user.avatar.url }}" alt=""/>
+                                <img src="{{ user.avatar.url }}" alt="user image"/>
                             </div>
                             <p>
                                 {{ user.name }}
@@ -138,7 +136,6 @@
                     {% endfor %}
                 </div>
             </div>
-            <!--  End -->
         </div>
     </main>
     <script src="/static/js/script.js"></script>

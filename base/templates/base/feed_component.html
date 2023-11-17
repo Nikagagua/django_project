@@ -36,17 +36,17 @@
     {% for room in rooms %}
         <div class="roomListRoom">
             <div class="roomListRoom__header">
-                <a href="{% url 'user-profile' room.host.id %}" class="roomListRoom__author">
+                <a href="{% if room_host %}{% url 'user-profile' room_host %}{% endif %}" class="roomListRoom__author">
                     <div class="avatar avatar--small">
                         <img src="https://randomuser.me/api/portraits/women/11.jpg" alt=""/>
                     </div>
                     <span>@{{ room.host.username }}</span>
                 </a>
                 <div class="roomListRoom__actions">
-                    <span>{{ room.created | timesince }} days ago</span>
+                    <span>{{ room.created | timesince }} ago</span>
                     {% if request.user == room.host %}
                         <div class="roomListRoom__actions">
-                            <a href="{% url 'update-room' room.id 'update' %}">
+                            <a href="{% url 'update-room' room.id %}">
                                 <svg
                                         height="32"
                                         viewBox="0 0 24 24"
@@ -69,7 +69,7 @@
                                     </g>
                                 </svg>
                             </a>
-                            <a href="{% url 'update-room' room.id 'delete' %}">
+                            <a href="{% url 'delete-room' room.id %}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
                                      viewBox="0 0 32 32">
                                     <title>remove</title>
@@ -111,7 +111,7 @@
                         {{ room.participants.count|divisibleby:"1000" }}k Joined
                     {% endif %}
                 </a>
-                <p class="roomListRoom__topic">{{ room_info.topic.name }}</p>
+                <p class="roomListRoom__topic">{{ room.topic.name }}</p>
             </div>
         </div>
     {% endfor %}
