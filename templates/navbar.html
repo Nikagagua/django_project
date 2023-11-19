@@ -23,7 +23,13 @@
                             <div class="avatar avatar--medium active">
                                 <img src="https://randomuser.me/api/portraits/men/37.jpg" alt=""/>
                             </div>
-                            <p>{{ request.user.name }} <span>@{{ request.user.username }}</span></p>
+                            {% if request.user.name %}
+                                <p>{{ request.user.name }}
+                                    <span>@{{ request.user.username }}</span></p>
+                            {% else %}
+                                <p>{{ request.user.username.capitalize }}
+                                    <span>@{{ request.user.username }}</span></p>
+                            {% endif %}
                         </a>
                         <button class="dropdown-button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"

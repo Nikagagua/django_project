@@ -4,7 +4,7 @@
     <main class="profile-page layout layout--3">
         <div class="container">
             {% include 'base/topic_component.html' %}
-            <!-- Room List Start -->
+
             <div class="roomList">
                 {% if user.is_authenticated %}
                     <div class="profile">
@@ -14,7 +14,11 @@
                             </div>
                         </div>
                         <div class="profile__info">
-                            <h3>{{ user.name }}</h3>
+                            {% if user.name %}
+                                <h3>{{ user.name.capitalize }}</h3>
+                            {% else %}
+                                <h3>{{ user.username.capitalize }}</h3>
+                            {% endif %}
                             <p>@{{ user.username }}</p>
                             {% if request.user == user %}
                                 <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit Profile</a>
@@ -30,7 +34,7 @@
                                 <p>
                                     No information has been added in bio
                                 </p>
-                            {% endif %} 
+                            {% endif %}
                         </div>
                     </div>
 
@@ -44,11 +48,8 @@
 
 
                     </div>
-                    <!-- Room List End -->
 
-                    <!-- Activities Start -->
                     {% include 'base/activity_component.html' %}
-                    <!-- Activities End -->
                     </div>
                 {% endif %}
     </main>

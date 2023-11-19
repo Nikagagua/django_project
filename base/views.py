@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from .models import Room, Topic, Message, User
-from .forms import RoomForm, UserForm, MyUserCreationForm
+from .forms import RoomForm, UserForm, MyUserCreationForm, MessageForm
 
 HOME_PAGE = 'home'
 LOGIN_PAGE = 'login'
@@ -19,8 +19,8 @@ def login_page(request):
         return redirect(HOME_PAGE)
 
     if request.method == 'POST':
-        username = request.POST.get('email').lower()
-        email = request.POST.get('password1')
+        email = request.POST.get('email').lower()
+        password = request.POST.get('password1')
 
         user_exists = None
         try:
@@ -76,21 +76,34 @@ def home(request):
         Q(topic__name__icontains=q) |
         Q(name__icontains=q) |
         Q(description__icontains=q)
-    )
+    )[:3]
+    show_all_room = Room.objects.filter(
+        Q(topic__name__icontains=q) |
+        Q(name__icontains=q) |
+        Q(description__icontains=q)
+    )[3:]
 
     topics = Topic.objects.all()[0:5]
+    topics_show_all = Topic.objects.all()[5:]
+    all_room_count = Room.objects.all().count()
     room_count = rooms.count()
     room_messages = Message.objects.filter(
-        Q(room__topic__name__icontains=q))[0:3]
+        Q(room__topic__name__icontains=q))[0:4]
 
-    context = {'rooms': rooms,
-               'topics': topics,
-               'room_count': room_count,
-               'room_messages': room_messages}
+    context = {
+        'rooms': rooms,
+        'topics': topics,
+        'room_count': room_count,
+        'room_messages': room_messages,
+        'topics_show_all': topics_show_all,
+        'show_all_room': show_all_room,
+        'all_room_count': all_room_count
+    }
     return render(request, 'base/home.html', context)
 
 
 def room(request, pk):
+    form = MessageForm()
     room_info = Room.objects.get(id=pk)
     room_host = room_info.host.id if room_info.host else None
     room_messages = room_info.message_set.all()
@@ -109,7 +122,8 @@ def room(request, pk):
         'room_info': room_info,
         'room_messages': room_messages,
         'participants': participants,
-        'room_host': room_host
+        'room_host': room_host,
+        'form': form
     }
     return render(request, 'base/room.html', context)
 
@@ -119,8 +133,12 @@ def user_profile(request, pk):
     rooms = user.room_set.all()
     room_messages = user.message_set.all()
     topics = Topic.objects.all()
-    context = {'user': user, 'rooms': rooms,
-               'room_messages': room_messages, 'topics': topics}
+    context = {
+        'user': user,
+        'rooms': rooms,
+        'room_messages': room_messages,
+        'topics': topics
+    }
     return render(request, 'base/profile.html', context)
 
 
@@ -205,7 +223,8 @@ def update_user(request):
             form.save()
             return redirect('user-profile', pk=user.id)
 
-    return render(request, 'base/update_user.html', {'form': form})
+    context = {'form': form}
+    return render(request, 'base/update_user.html', context)
 
 
 def topics_page(request):

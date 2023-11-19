@@ -2,7 +2,7 @@
     <div class="activities__header">
         <h2>Recent Activities</h2>
     </div>
-    {% for message in message_info %}
+    {% for message in room_messages %}
         <div class="activities__box">
             <div class="activities__boxHeader roomListRoom__header">
                 <a href="{% url 'user-profile' message.user.id %}" class="roomListRoom__author">
@@ -37,6 +37,7 @@
         </div>
     {% endfor %}
 </div>
+
 
 
 

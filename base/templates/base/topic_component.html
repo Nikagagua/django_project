@@ -3,11 +3,11 @@
         <h2>Browse Topics</h2>
     </div>
 
-    <ul class="topics__list">
+    <ul class="topics__list" id="defaultTopics">
         {% for topic in topics|slice:":1" %}
             <li>
                 <a href="{% url 'home' %}" class="active">
-                    All <span>{{ rooms.count }}</span>
+                    All <span>{{ all_room_count }}</span>
                 </a>
             </li>
         {% endfor %}
@@ -20,11 +20,21 @@
         {% endfor %}
     </ul>
 
-    <a class="btn btn--link" href="{% url 'home' %}">
+    <a class="btn btn--link" href="#" id="showMoreTopics">
         More
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
             <title>chevron-down</title>
             <path d="M16 21l-13-13h-3l16 16 16-16h-3l-13 13z"></path>
         </svg>
     </a>
+
+    <ul class="topics__list" id="additionalTopics" style="display: none;">
+        {% for topic in topics_show_all %}
+            <li>
+                <a href="{% url 'home' %}?q={{ topic.name }}">
+                    {{ topic.name }} <span>{{ topic.room_set.all.count }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
 </div>

@@ -1,5 +1,4 @@
 {% extends 'main.html' %}
-
 {% block content %}
     <main class="profile-page layout layout--2">
         <div class="container">
@@ -54,24 +53,23 @@
                 <div class="room__box scroll">
                     <div class="room__header scroll">
                         <div class="room__info">
-                            <h3>{{ room.name }}</h3>
-                            <span>{{ room.created|timesince }} ago</span>
+                            <h3>{{ room_info.name }}</h3>
+                            <span>{{ room_info.created|timesince }} ago</span>
                         </div>
                         <div class="room__hosted">
                             <p>Hosted By</p>
-                            <a href="{% url 'user-profile' room.host.id %}" class="room__author">
+                            <a href="{% url 'user-profile' room_info.host.id %}" class="room__author">
                                 <div class="avatar avatar--small">
                                     <img src="{{ room.host.avatar.url }}" alt=""/>
                                 </div>
-                                <span>@{{ room.host.username }}</span>
+                                <span>@{{ room_info.host.username }}</span>
                             </a>
                         </div>
-                        <span class="room__topics">{{ room.topic.name }}</span>
+                        <span class="room__topics">{{ room_info.topic.name }}</span>
                     </div>
 
                     <div class="room__conversation">
                         <div class="threads scroll">
-
 
                             {% for message in room_messages %}
                                 <div class="thread">
@@ -114,7 +112,12 @@
                     <form action="" method="POST">
                         {% csrf_token %}
                         <label>
-                            <input name="body" placeholder="Write your message here..."/>
+                            <input
+                                    type="text"
+                                    name="body"
+                                    placeholder="Write a message"
+                                    size="98"
+                            />
                         </label>
                     </form>
                 </div>
