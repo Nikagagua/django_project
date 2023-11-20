@@ -2,7 +2,6 @@
 {% block content %}
     <main class="profile-page layout layout--2">
         <div class="container">
-            <!-- Room Start -->
             <div class="room">
                 <div class="room__top">
                     <div class="room__topLeft">
@@ -60,7 +59,7 @@
                             <p>Hosted By</p>
                             <a href="{% url 'user-profile' room_info.host.id %}" class="room__author">
                                 <div class="avatar avatar--small">
-                                    <img src="{{ room.host.avatar.url }}" alt=""/>
+                                    <img src="{{ room_info.host.avatar.url }}" alt="user avatar"/>
                                 </div>
                                 <span>@{{ room_info.host.username }}</span>
                             </a>

@@ -88,7 +88,7 @@ def home(request):
     all_room_count = Room.objects.all().count()
     room_count = rooms.count()
     room_messages = Message.objects.filter(
-        Q(room__topic__name__icontains=q))[0:4]
+        Q(room__topic__name__icontains=q))[0:3]
 
     context = {
         'rooms': rooms,
@@ -133,11 +133,13 @@ def user_profile(request, pk):
     rooms = user.room_set.all()
     room_messages = user.message_set.all()
     topics = Topic.objects.all()
+    all_room_count = Room.objects.all().count()
     context = {
         'user': user,
         'rooms': rooms,
         'room_messages': room_messages,
-        'topics': topics
+        'topics': topics,
+        'all_room_count': all_room_count,
     }
     return render(request, 'base/profile.html', context)
 

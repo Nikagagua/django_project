@@ -30,4 +30,4 @@ class MessageForm(ModelForm):
 class UserForm(ModelForm):
     class Meta:
         model = User
-        fields = ['avatar', 'name', 'username', 'bio']
+        fields = ['avatar', 'name', 'bio']

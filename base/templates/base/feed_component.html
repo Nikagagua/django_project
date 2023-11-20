@@ -38,7 +38,7 @@
             <div class="roomListRoom__header">
                 <a href="{% url 'user-profile' room.host.id %}" class="roomListRoom__author">
                     <div class="avatar avatar--small">
-                        <img src="https://randomuser.me/api/portraits/men/11.jpg" alt=""/>
+                        <img src="{{ room.host.avatar.url }}" alt="user avatar"/>
                     </div>
                     <span>@{{ room.host.username }}</span>
                 </a>
@@ -131,7 +131,7 @@
                 <div class="roomListRoom__header">
                     <a href="{% url 'user-profile' room.host.id %}" class="roomListRoom__author">
                         <div class="avatar avatar--small">
-                            <img src="https://randomuser.me/api/portraits/men/11.jpg" alt=""/>
+                            <img src="{{ room.host.avatar.url }}" alt="user avatar"/>
                         </div>
                         <span>@{{ room.host.username }}</span>
                     </a>

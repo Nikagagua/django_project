@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <div class="layout__body">
-                    <form class="form" action="" method="POST" enctype="multipart/form-data">
+                    <form class="form" action="{% url 'update-user' %}" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ form.errors }}
 
@@ -32,12 +32,7 @@
 
                         <div class="form__action">
                             <a class="btn btn--dark" href="{% url 'home' %}">Cancel</a>
-                            <a href="{% url 'user-profile' request.user.id %}"
-                                    class="btn btn--main" 
-                                    type="submit"
-                            >
-                                Update
-                            </a>
+                            <button class="btn btn--main" type="submit">Update</button>
                         </div>
                     </form>
                 </div>

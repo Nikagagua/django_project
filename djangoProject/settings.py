@@ -6,7 +6,7 @@ SECRET_KEY = 'django-insecure-02-l29h+@a^yvh#*gr($s55xm)ece4jto2pz45#^a5(_rffi5p
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -72,6 +72,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -82,8 +85,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
-
-# STATIC_ROOT = 
 
 LOGIN_URL = 'login'
 
