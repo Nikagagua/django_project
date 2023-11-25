@@ -4,17 +4,10 @@
     </div>
 
     <ul class="topics__list" id="defaultTopics">
-        {% for topic in topics|slice:":1" %}
-            <li>
-                <a href="{% url 'home' %}" class="active">
-                    All <span>{{ all_room_count }}</span>
-                </a>
-            </li>
-        {% endfor %}
         {% for topic in topics %}
             <li>
                 <a href="{% url 'home' %}?q={{ topic.name }}">
-                    {{ topic.name }} <span>{{ topic.room_set.all.count }}</span>
+                    {{ topic.name }} <span>{{ topic.room_count }}</span>
                 </a>
             </li>
         {% endfor %}
@@ -29,10 +22,10 @@
     </a>
 
     <ul class="topics__list" id="additionalTopics" style="display: none;">
-        {% for topic in topics_show_all %}
+        {% for topic in other_topics %}
             <li>
                 <a href="{% url 'home' %}?q={{ topic.name }}">
-                    {{ topic.name }} <span>{{ topic.room_set.all.count }}</span>
+                    {{ topic.name }} <span>{{ topic.room_count }}</span>
                 </a>
             </li>
         {% endfor %}

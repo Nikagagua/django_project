@@ -1,4 +1,5 @@
 from pathlib import Path
+from django.contrib.messages import constants as messages
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,7 +29,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'djangoProject.urls'
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+ROOT_URLCONF = 'study_network_project.urls'
 
 TEMPLATES = [
     {
@@ -46,7 +49,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'djangoProject.wsgi.application'
+WSGI_APPLICATION = 'study_network_project.wsgi.application'
 
 DATABASES = {
     'default': {

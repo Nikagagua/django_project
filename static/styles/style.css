@@ -840,9 +840,9 @@ a {
 ================================*/
 
 .settings__avatar {
-  text-align: center;
-  margin: 0 auto;
-  display: flex;
+    text-align: center;
+    margin: 0 auto;
+    display: flex;
     justify-content: center;
 }
 
@@ -1065,8 +1065,8 @@ a {
 
 .thread {
     border-left: 2px solid var(--color-dark);
-  margin: 2rem 0;
-  padding: 2rem;
+    margin: 2rem 0;
+    padding: 2rem;
 }
 
 .thread__top {
@@ -1140,9 +1140,9 @@ a {
 }
 
 .participants__list {
-  height: 82.5vh;
+    height: 82.5vh;
     overflow-y: scroll;
-  padding: 2rem 2rem 0;
+    padding: 2rem 2rem 0;
 }
 
 .participant {
@@ -1161,4 +1161,14 @@ a {
     display: block;
     font-weight: 500;
     color: var(--color-main);
+}
+
+
+.error-message {
+    color: var(--color-error);
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    list-style: none;
+    padding: 0; 
+    text-align: center; 
 }

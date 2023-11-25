@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.contrib import messages
+from django import forms
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.contrib.auth import authenticate, login, logout
 from .models import Room, Topic, Message, User
 from .forms import RoomForm, UserForm, MyUserCreationForm, MessageForm
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import messages
 
 HOME_PAGE = 'home'
 LOGIN_PAGE = 'login'
@@ -19,28 +21,37 @@ def login_page(request):
         return redirect(HOME_PAGE)
 
     if request.method == 'POST':
-        email = request.POST.get('email').lower()
-        password = request.POST.get('password1')
+        form = MyUserCreationForm(request.POST)
 
-        user_exists = None
-        try:
-            user_exists = User.objects.get(email=email)
-        except User.DoesNotExist as e:
-            messages.error(request, f'User {user_exists} does not exist: {e}')
-            return redirect(LOGIN_PAGE)
+        if form.is_valid():
+            email = form.cleaned_data.get('email').lower()
+            password = form.cleaned_data.get('password1')
 
-        user = authenticate(request, email=email, password=password)
+            try:
+                user_exists = User.objects.get(email=email)
+            except ObjectDoesNotExist as e:
+                user_exists = None
 
-        if user is not None:
-            login(request, user)
-            return redirect('home')
-        else:
-            messages.error(request, 'Username or password does not exist')
+            if user_exists is None:
+                messages.error(request, 'Username or password does not exist.')
+                return redirect(LOGIN_PAGE)
+
+            user = authenticate(request, email=email, password=password)
+
+            if user is not None:
+                messages.success(request,
+                                 f'Welcome, {user.username}! You have successfully logged in.')
+                login(request, user)
+                return redirect(HOME_PAGE)
+            else:
+                messages.error(request, 'Username or password does not exist.')
+                return redirect(LOGIN_PAGE)
 
     context = {
         'form': form,
         'page': page
     }
+
     return render(request, 'base/login.html', context)
 
 
@@ -57,10 +68,24 @@ def register_page(request):
             user.username = user.username.lower()
             user.save()
             login(request, user)
+            messages.success(request,
+                             'Welcome, {}! You have successfully registered and logged in.'.format(user.username))
             return redirect('home')
         else:
-            messages.error(request, 'An error occurred during registration')
-
+            error_messages = []
+            for field, errors in form.errors.items():
+                for error in errors:
+                    if field == 'username' and 'unique' in error.lower():
+                        error_messages.append('Email already exists.')
+                    elif field == 'password1' and 'password' in error.lower():
+                        error_messages.append(
+                            'The password you entered does not meet the requirements. '
+                            'Make sure it is at least 8 characters long and contains both letters and numbers.')
+                    elif field == 'password2' and 'match' in error.lower():
+                        error_messages.append('The passwords you entered do not match. Please try again.')
+                    else:
+                        error_messages.append(error)
+            messages.error(request, '\n'.join(error_messages))
             context = {'form': form}
             return render(request, 'base/signup.html', context)
     else:
@@ -71,6 +96,8 @@ def register_page(request):
 
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') is not None else ''
+
+    topics = Topic.objects.annotate(room_count=Count('room')).order_by('-room_count')
 
     rooms = Room.objects.filter(
         Q(topic__name__icontains=q) |
@@ -83,25 +110,31 @@ def home(request):
         Q(description__icontains=q)
     )[3:]
 
-    topics = Topic.objects.all()[0:5]
-    topics_show_all = Topic.objects.all()[5:]
+    top_topics = topics[0:5]
+    other_topics = topics[5:]
+    room_by_topic = {topic.id: Room.objects.filter(topic=topic)[0:3] for topic in top_topics}
+    all_room_by_topic = {topic.id: Room.objects.filter(topic=topic)[3:0] for topic in top_topics}
     all_room_count = Room.objects.all().count()
-    room_count = rooms.count()
     room_messages = Message.objects.filter(
         Q(room__topic__name__icontains=q))[0:3]
 
+    user = request.user if request.user.is_authenticated else None
+
     context = {
+        'user': user,
         'rooms': rooms,
-        'topics': topics,
-        'room_count': room_count,
+        'topics': top_topics,
         'room_messages': room_messages,
-        'topics_show_all': topics_show_all,
-        'show_all_room': show_all_room,
-        'all_room_count': all_room_count
+        'other_topics': other_topics,
+        'all_room_count': all_room_count,
+        'room_by_topic': room_by_topic,
+        'all_room_by_topic': all_room_by_topic,
+        'q': q
     }
     return render(request, 'base/home.html', context)
 
 
+@login_required(login_url='login')
 def room(request, pk):
     form = MessageForm()
     room_info = Room.objects.get(id=pk)
@@ -128,6 +161,7 @@ def room(request, pk):
     return render(request, 'base/room.html', context)
 
 
+@login_required(login_url='login')
 def user_profile(request, pk):
     user = User.objects.get(id=pk)
     rooms = user.room_set.all()
