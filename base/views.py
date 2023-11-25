@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django import forms
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Count
 from django.contrib.auth import authenticate, login, logout
@@ -30,10 +29,7 @@ def login_page(request):
             try:
                 user_exists = User.objects.get(email=email)
             except ObjectDoesNotExist as e:
-                user_exists = None
-
-            if user_exists is None:
-                messages.error(request, 'Username or password does not exist.')
+                user_exists = messages.error(request, 'Email or password does not exist.')
                 return redirect(LOGIN_PAGE)
 
             user = authenticate(request, email=email, password=password)
@@ -44,7 +40,7 @@ def login_page(request):
                 login(request, user)
                 return redirect(HOME_PAGE)
             else:
-                messages.error(request, 'Username or password does not exist.')
+                messages.error(request, 'Email or password does not exist.')
                 return redirect(LOGIN_PAGE)
 
     context = {
@@ -75,8 +71,10 @@ def register_page(request):
             error_messages = []
             for field, errors in form.errors.items():
                 for error in errors:
-                    if field == 'username' and 'unique' in error.lower():
+                    if field == 'email' and 'unique' in error.lower():
                         error_messages.append('Email already exists.')
+                    elif field == 'username' and 'unique' in error.lower():
+                        error_messages.append('Username already exists.')
                     elif field == 'password1' and 'password' in error.lower():
                         error_messages.append(
                             'The password you entered does not meet the requirements. '

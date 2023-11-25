@@ -1,5 +1,6 @@
+import os
 from pathlib import Path
-from django.contrib.messages import constants as messages
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -92,3 +93,11 @@ STATICFILES_DIRS = [
 LOGIN_URL = 'login'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# SMTP Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = '587'
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'n1ckn3t1c@gmail.com'
+EMAIL_HOST_PASSWORD = 'pmog kjps pfbe rpto'
