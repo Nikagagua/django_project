@@ -126,6 +126,7 @@ def home(request):
         'other_topics': other_topics,
         'all_room_count': all_room_count,
         'room_by_topic': room_by_topic,
+        'show_all_room': show_all_room,
         'all_room_by_topic': all_room_by_topic,
         'q': q
     }
