@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Count
 from django.contrib.auth import authenticate, login, logout
 from .models import Room, Topic, Message, User
-from .forms import RoomForm, UserForm, MyUserCreationForm, MessageForm
+from .forms import RoomForm, UserForm, MyUserCreationForm, MessageForm, LoginForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 
@@ -13,41 +13,33 @@ LOGIN_PAGE = 'login'
 
 
 def login_page(request):
-    form = MyUserCreationForm()
     page = HOME_PAGE
 
     if request.user.is_authenticated:
         return redirect(HOME_PAGE)
 
+    login_form = LoginForm()
+
     if request.method == 'POST':
-        form = MyUserCreationForm(request.POST)
+        email = request.POST.get('email').lower()
+        password = request.POST.get('password')
 
-        if form.is_valid():
-            email = form.cleaned_data.get('email').lower()
-            password = form.cleaned_data.get('password1')
+        user_email = None
+        try:
+            user_email = User.objects.get(email=email)
+        except ObjectDoesNotExist:
+            messages.error(request, f'{user_email} does not exist')
+            return exit(1)
 
-            try:
-                user_exists = User.objects.get(email=email)
-            except ObjectDoesNotExist as e:
-                user_exists = messages.error(request, 'Email or password does not exist.')
-                return redirect(LOGIN_PAGE)
+        user = authenticate(request, email=email, password=password)
 
-            user = authenticate(request, email=email, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect(HOME_PAGE)
+        else:
+            messages.error(request, 'Email or Password does not exit')
 
-            if user is not None:
-                messages.success(request,
-                                 f'Welcome, {user.username}! You have successfully logged in.')
-                login(request, user)
-                return redirect(HOME_PAGE)
-            else:
-                messages.error(request, 'Email or password does not exist.')
-                return redirect(LOGIN_PAGE)
-
-    context = {
-        'form': form,
-        'page': page
-    }
-
+    context = {'page': page, 'form': login_form}
     return render(request, 'base/login.html', context)
 
 
