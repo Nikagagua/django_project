@@ -155,15 +155,20 @@ def room(request, pk):
 @login_required(login_url='login')
 def user_profile(request, pk):
     user = User.objects.get(id=pk)
-    rooms = user.room_set.all()
-    room_messages = user.message_set.all()
-    topics = Topic.objects.all()
+    rooms = Room.objects.filter()[0:2]
+    show_all_room = Room.objects.filter()[3:]
+    room_messages = Message.objects.filter()[0:4]
+    topics = Topic.objects.annotate(room_count=Count('room')).order_by('-room_count')
+    top_topics = topics[0:5]
+    other_topics = topics[5:]
     all_room_count = Room.objects.all().count()
     context = {
         'user': user,
         'rooms': rooms,
+        'show_all_room': show_all_room,
         'room_messages': room_messages,
-        'topics': topics,
+        'topics': top_topics,
+        'other_topics': other_topics,
         'all_room_count': all_room_count,
     }
     return render(request, 'base/profile.html', context)
