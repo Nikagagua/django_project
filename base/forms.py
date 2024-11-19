@@ -7,37 +7,37 @@ from django import forms
 class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['name', 'username', 'email', 'password1', 'password2']
+        fields = ["name", "username", "email", "password1", "password2"]
 
     def clean_email(self):
-        email = self.cleaned_data.get('email')
+        email = self.cleaned_data.get("email")
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError('Email already exists')
+            raise forms.ValidationError("Email already exists")
         return email
 
 
 class RoomForm(ModelForm):
     class Meta:
         model = Room
-        fields = ['name', 'topic', 'description']
+        fields = ["name", "topic", "description"]
 
 
 class TopicForm(ModelForm):
     class Meta:
         model = Topic
-        fields = ['name']
+        fields = ["name"]
 
 
 class MessageForm(ModelForm):
     class Meta:
         model = Message
-        fields = ['body']
+        fields = ["body"]
 
 
 class UserForm(ModelForm):
     class Meta:
         model = User
-        fields = ['avatar', 'name', 'bio']
+        fields = ["avatar", "name", "bio"]
 
 
 class LoginForm(forms.Form):
