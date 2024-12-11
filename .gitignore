@@ -2,3 +2,9 @@
 *.sqlite3
 *idea
 *.pyc
+venv
+.env
+db.sqlite3
+media
+static
+base/__pycache__
